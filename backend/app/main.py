@@ -11,6 +11,9 @@ from app.core.middleware import RequestContextMiddleware, RateLimitMiddleware
 # Routers
 from app.modules.authentication.router import router as auth_router
 from app.modules.users.router import router as users_router
+from app.modules.categories.router import router as categories_router
+from app.modules.products.router import router as products_router
+from app.modules.search.router import router as search_router
 
 
 @asynccontextmanager
@@ -54,6 +57,9 @@ app.add_middleware(
 api_v1_prefix = settings.API_V1_STR
 app.include_router(auth_router, prefix=api_v1_prefix)
 app.include_router(users_router, prefix=api_v1_prefix)
+app.include_router(categories_router, prefix=api_v1_prefix)
+app.include_router(products_router, prefix=api_v1_prefix)
+app.include_router(search_router, prefix=api_v1_prefix)
 
 
 @app.get("/health", tags=["Health"])
