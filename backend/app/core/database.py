@@ -84,7 +84,28 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             await session.close()
 
 
+def _import_all_models() -> None:
+    """Explicitly imports all domain models so Base.metadata is completely populated."""
+    import app.modules.users.models  # noqa
+    import app.modules.categories.models  # noqa
+    import app.modules.products.models  # noqa
+    import app.modules.vendors.models  # noqa
+    import app.modules.inventory.models  # noqa
+    import app.modules.coupons.models  # noqa
+    import app.modules.cart.models  # noqa
+    import app.modules.wishlist.models  # noqa
+    import app.modules.shipping.models  # noqa
+    import app.modules.payments.models  # noqa
+    import app.modules.orders.models  # noqa
+    import app.modules.substitutions.models  # noqa
+    import app.modules.recommendations.models  # noqa
+    import app.modules.reviews.models  # noqa
+    import app.modules.notifications.models  # noqa
+    import app.modules.admin.models  # noqa
+
+
 async def init_db() -> None:
     """Initializes all database tables registered with Base metadata."""
+    _import_all_models()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

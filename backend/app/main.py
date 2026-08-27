@@ -1,4 +1,4 @@
-"""Main FastAPI application entry point with modular router registration and lifecycle hooks."""
+"""Main FastAPI application entry point with all 18 domain routers registered and lifecycle hooks."""
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +8,7 @@ from app.core.redis import cache
 from app.core.exceptions import register_exception_handlers
 from app.core.middleware import RequestContextMiddleware, RateLimitMiddleware
 
-# Routers
+# All 18 Domain Routers
 from app.modules.authentication.router import router as auth_router
 from app.modules.users.router import router as users_router
 from app.modules.categories.router import router as categories_router
@@ -25,6 +25,8 @@ from app.modules.orders.router import router as orders_router
 from app.modules.substitutions.router import router as substitutions_router
 from app.modules.recommendations.router import router as recommendations_router
 from app.modules.reviews.router import router as reviews_router
+from app.modules.notifications.router import router as notifications_router
+from app.modules.admin.router import router as admin_router
 
 
 @asynccontextmanager
@@ -82,6 +84,8 @@ app.include_router(orders_router, prefix=api_v1_prefix)
 app.include_router(substitutions_router, prefix=api_v1_prefix)
 app.include_router(recommendations_router, prefix=api_v1_prefix)
 app.include_router(reviews_router, prefix=api_v1_prefix)
+app.include_router(notifications_router, prefix=api_v1_prefix)
+app.include_router(admin_router, prefix=api_v1_prefix)
 
 
 @app.get("/health", tags=["Health"])
