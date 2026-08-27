@@ -16,6 +16,9 @@ from app.modules.products.router import router as products_router
 from app.modules.search.router import router as search_router
 from app.modules.vendors.router import router as vendors_router
 from app.modules.inventory.router import router as inventory_router
+from app.modules.cart.router import router as cart_router
+from app.modules.wishlist.router import router as wishlist_router
+from app.modules.coupons.router import router as coupons_router
 
 
 @asynccontextmanager
@@ -64,6 +67,9 @@ app.include_router(products_router, prefix=api_v1_prefix)
 app.include_router(search_router, prefix=api_v1_prefix)
 app.include_router(vendors_router, prefix=api_v1_prefix)
 app.include_router(inventory_router, prefix=api_v1_prefix)
+app.include_router(cart_router, prefix=api_v1_prefix)
+app.include_router(wishlist_router, prefix=api_v1_prefix)
+app.include_router(coupons_router, prefix=api_v1_prefix)
 
 
 @app.get("/health", tags=["Health"])
