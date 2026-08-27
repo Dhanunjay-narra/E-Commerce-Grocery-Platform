@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta, date
 # Ensure backend root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.core.database import async_session_factory, init_db
+from app.core.database import async_session_factory, init_db, engine
 from app.core.security import get_password_hash, UserRole
 from app.modules.users.models import User, UserAddress
 from app.modules.categories.models import Category
@@ -21,7 +21,11 @@ from app.modules.substitutions.models import ProductSubstitutionRule
 
 async def seed_master_dataset():
     print("[*] Initializing FreshCart database schema...")
-    await init_db()
+    async with engine.begin() as conn:
+        from app.core.database import _import_all_models, Base
+        _import_all_models()
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
 
     async with async_session_factory() as session:
         print("[*] Seeding Users and Administrative Personas...")
