@@ -22,6 +22,9 @@ from app.modules.coupons.router import router as coupons_router
 from app.modules.shipping.router import router as shipping_router
 from app.modules.payments.router import router as payments_router
 from app.modules.orders.router import router as orders_router
+from app.modules.substitutions.router import router as substitutions_router
+from app.modules.recommendations.router import router as recommendations_router
+from app.modules.reviews.router import router as reviews_router
 
 
 @asynccontextmanager
@@ -76,6 +79,9 @@ app.include_router(coupons_router, prefix=api_v1_prefix)
 app.include_router(shipping_router, prefix=api_v1_prefix)
 app.include_router(payments_router, prefix=api_v1_prefix)
 app.include_router(orders_router, prefix=api_v1_prefix)
+app.include_router(substitutions_router, prefix=api_v1_prefix)
+app.include_router(recommendations_router, prefix=api_v1_prefix)
+app.include_router(reviews_router, prefix=api_v1_prefix)
 
 
 @app.get("/health", tags=["Health"])
