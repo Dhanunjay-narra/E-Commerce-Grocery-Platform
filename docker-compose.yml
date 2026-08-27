@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  # PostgreSQL 16 Enterprise Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: freshcart-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: freshcart_user
+      POSTGRES_PASSWORD: freshcart_secure_password_2026
+      POSTGRES_DB: freshcart_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U freshcart_user -d freshcart_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 7 Distributed Cache & Locks
+  redis:
+    image: redis:7-alpine
+    container_name: freshcart-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: freshcart-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+asyncpg://freshcart_user:freshcart_secure_password_2026@postgres:5432/freshcart_db
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: freshcart_production_super_secret_jwt_key_98234710928374
+      ALLOWED_ORIGINS: '["http://localhost", "http://localhost:3000", "http://freshcart.local"]'
+    ports:
+      - "8000:8000"
+
+  # Next.js 14 Web Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: freshcart-frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+
+  # Nginx Gateway & Reverse Proxy
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: freshcart-nginx
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+volumes:
+  postgres_data:
+  redis_data:

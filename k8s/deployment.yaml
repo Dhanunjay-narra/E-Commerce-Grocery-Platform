@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freshcart-backend
+  namespace: default
+  labels:
+    app: freshcart-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: freshcart-backend
+  template:
+    metadata:
+      labels:
+        app: freshcart-backend
+    spec:
+      containers:
+        - name: backend
+          image: freshcart/backend:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: freshcart-config
+            - secretRef:
+                name: freshcart-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1024Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freshcart-frontend
+  namespace: default
+  labels:
+    app: freshcart-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: freshcart-frontend
+  template:
+    metadata:
+      labels:
+        app: freshcart-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: freshcart/frontend:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
