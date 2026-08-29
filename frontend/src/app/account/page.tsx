@@ -3,8 +3,21 @@ import React from "react";
 import Link from "next/link";
 import { User, MapPin, Package, Heart, RefreshCw, Shield, Bell, LogOut, ChevronRight } from "lucide-react";
 
+interface MenuItem {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+  desc?: string;
+}
+
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
+
 export default function AccountPage() {
-  const MENU_SECTIONS = [
+  const MENU_SECTIONS: MenuSection[] = [
     {
       title: "Orders & Reordering",
       items: [
