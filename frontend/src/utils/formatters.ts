@@ -1,4 +1,4 @@
-"""Frontend Display Formatters and Date Calculations."""
+/** Frontend Display Formatters and Date Calculations. */
 
 export function formatCurrency(amount: number, currency: string = "INR"): string {
   return new Intl.NumberFormat("en-IN", {
